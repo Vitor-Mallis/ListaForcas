@@ -152,20 +152,58 @@ b2Vec2 * Game::WorldToBox(b2Vec2 *vectors, float32 size)
 	return vectors;
 }
 
+void Game::Dominoes() {
+	
+	b2Vec2 groundCoords1 = { 5.f, 595.f };
+	b2Vec2 groundCoords2 = { 795.f, 595.f };
+
+	b2Body *firstDomino;
+
+	b2Vec2 domDimensions = { 20.f, 100.f };
+	b2Vec2 domPosition = { 250.f, 545.f };
+
+	b2Vec2 forceVector = { 150.f, 0.f };
+	b2Vec2 forcePoint = { -1.f, -1.f };
+
+	// Creating the ground
+	world->CreateLine(b2_staticBody, WorldToBox(groundCoords1), WorldToBox(groundCoords2), 0.f, 0.f, 1.f);
+
+	//Creating the first domino
+	firstDomino = world->CreateBox(b2_dynamicBody, WorldToBox(domPosition), WorldToBox(domDimensions), 1.f, 0.f, 1.f);
+	domPosition.x += 50.f;
+
+	//Creating the dominoes
+	for (int i = 0; i < 5; i++) {
+		world->CreateBox(b2_dynamicBody, WorldToBox(domPosition), WorldToBox(domDimensions), 1.f, 0.f, 1.f);
+		domPosition.x += 50.f;
+	}
+
+	while (window->isOpen()) {
+		//Checking for exercise-specific events
+		while (window->pollEvent(sfEvent)) {
+			if (sfEvent.type == sf::Event::Closed) window->close();
+
+			else if (sfEvent.type == sf::Event::KeyPressed) {
+				if(sfEvent.key.code == sf::Keyboard::F) firstDomino->ApplyForce(forceVector, firstDomino->GetWorldPoint(forcePoint), true);
+			}
+		}
+
+		Update();
+		Render();
+	}
+}
+
 void Game::Run()
 {
 	bool exit = 0;
 	int number = -1;
 
 	while (!exit) {
-		std::cout << "Digite o numero do exercicio. Os exercicios 1 a 3 estao juntos no numero 1:\n";
+		std::cout << "Digite o numero do exercicio:\n";
 		std::cout << "0 - Sair do programa\n";
-		std::cout << "1 - Criar caixas, circulos e linhas e alterar a gravidade\n";
-		std::cout << "2 - Para cada caixa criada, aumenta a restituicao\n";
-		std::cout << "3 - Para cada caixa criada na rampa, aumenta a friccao\n";
-		std::cout << "4 - 6 caixas empilhadas e 6 circulos empilhados\n";
-		std::cout << "5 - Muro de 10x10 caixas\n";
-		std::cout << "6 - Objeto com multiplas fixtures\n\n";
+		std::cout << "1 - Dominos\n";
+		std::cout << "2 - Projetil\n";
+		std::cout << "3 - Controller\n\n";
 		std::cout << "Digite o numero: ";
 		std::cin >> number;
 		std::cout << std::endl;
@@ -180,13 +218,13 @@ void Game::Run()
 		case 0:
 			exit = 1;
 			break;
-		/*case 1:
+		case 1:
 			createWindow();
-			Exercicio1_3();
+			Dominoes();
 			delete world;
 			number = -1;
 			break;
-		case 2:
+		/*case 2:
 			createWindow();
 			Exercicio4();
 			delete world;
