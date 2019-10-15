@@ -193,6 +193,29 @@ void Game::Dominoes() {
 	}
 }
 
+void Game::Projectile()
+{
+	b2Vec2 bulletPosition = { 10.f, 590.f };
+	b2Vec2 bulletVector = { 10.f, -10.f };
+	b2Body *bullet = NULL;
+
+	while (window->isOpen()) {
+		while (window->pollEvent(sfEvent)) {
+			if (sfEvent.type == sf::Event::Closed) window->close();
+
+			else if (sfEvent.type == sf::Event::KeyPressed) {
+				if (sfEvent.key.code == sf::Keyboard::Space) {
+					bullet = NULL;
+					bullet = world->CreateCircle(b2_dynamicBody, WorldToBox(bulletPosition), WorldToBox(10.f), 1.f, 0.f, 1.f);
+					bullet->ApplyLinearImpulse(bulletVector, bullet->GetWorldCenter(), true);
+				}
+			}
+		}
+		Update();
+		Render();
+	}
+}
+
 void Game::Run()
 {
 	bool exit = 0;
@@ -224,13 +247,13 @@ void Game::Run()
 			delete world;
 			number = -1;
 			break;
-		/*case 2:
+		case 2:
 			createWindow();
-			Exercicio4();
+			Projectile();
 			delete world;
 			number = -1;
 			break;
-		case 3:
+			/*case 3:
 			createWindow();
 			Exercicio5();
 			delete world;

@@ -23,6 +23,7 @@ public:
 	b2Vec2 *WorldToBox(b2Vec2 *vectors, float32 size);
 
 	void Dominoes();
+	void Projectile();
 
 	void Run();
 
