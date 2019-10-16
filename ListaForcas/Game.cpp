@@ -152,6 +152,15 @@ b2Vec2 * Game::WorldToBox(b2Vec2 *vectors, float32 size)
 	return vectors;
 }
 
+b2Vec2 Game::CalculateVector(float32 magnitude, float32 angle)
+{
+	float32 angleRadians = angle * b2_pi / 180;
+	float32 vx = magnitude * cos(angleRadians);
+	float32 vy = magnitude * sin(angleRadians);
+	b2Vec2 vec(vx, vy);
+	return vec;
+}
+
 void Game::Dominoes() {
 	
 	b2Vec2 groundCoords1 = { 5.f, 595.f };
@@ -196,7 +205,9 @@ void Game::Dominoes() {
 void Game::Projectile()
 {
 	b2Vec2 bulletPosition = { 10.f, 590.f };
-	b2Vec2 bulletVector = { 10.f, -10.f };
+	float32 forceMagnitude = 10.f;
+	float32 forceAngle = -45.f;
+	b2Vec2 forceVector = CalculateVector(forceMagnitude, forceAngle);
 	b2Body *bullet = NULL;
 
 	while (window->isOpen()) {
@@ -205,12 +216,26 @@ void Game::Projectile()
 
 			else if (sfEvent.type == sf::Event::KeyPressed) {
 				if (sfEvent.key.code == sf::Keyboard::Space) {
+					forceVector = CalculateVector(forceMagnitude, forceAngle);
 					bullet = NULL;
 					bullet = world->CreateCircle(b2_dynamicBody, WorldToBox(bulletPosition), WorldToBox(10.f), 1.f, 0.f, 1.f);
-					bullet->ApplyLinearImpulse(bulletVector, bullet->GetWorldCenter(), true);
+					bullet->ApplyLinearImpulse(forceVector, bullet->GetWorldCenter(), true);
+				}
+				else if (sfEvent.key.code == sf::Keyboard::Left) {
+					if (forceMagnitude > 0.f) forceMagnitude -= 1.f;
+				}
+				else if (sfEvent.key.code == sf::Keyboard::Right) {
+					if (forceMagnitude < 20.f) forceMagnitude += 1.f;
+				}
+				else if (sfEvent.key.code == sf::Keyboard::Up) {
+					if (forceAngle > -90.f) forceAngle -= 1.f;
+				}
+				else if (sfEvent.key.code == sf::Keyboard::Down) {
+					if (forceAngle < 0.f) forceAngle += 1.f;
 				}
 			}
 		}
+
 		Update();
 		Render();
 	}
@@ -285,7 +310,9 @@ void Game::Run()
 
 void Game::createWindow()
 {
-	world = new PhysicsWorld();
+	b2Vec2 gravity(0.f, 9.8f);
+
+	world = new PhysicsWorld(gravity);
 
 	window = new sf::RenderWindow(sf::VideoMode(800, 600), "Física - Lista 1");
 	window->setFramerateLimit(60);

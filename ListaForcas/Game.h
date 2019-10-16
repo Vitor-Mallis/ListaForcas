@@ -22,6 +22,8 @@ public:
 	b2Vec2 WorldToBox(b2Vec2 vector);
 	b2Vec2 *WorldToBox(b2Vec2 *vectors, float32 size);
 
+	b2Vec2 CalculateVector(float32 magnitude, float32 angle);
+
 	void Dominoes();
 	void Projectile();
 
